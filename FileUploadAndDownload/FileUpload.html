@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script>
+        function doUpload() {
+            var url = 'http://localhost:6346/api/Upload?guid=1234567890';
+            var formData = new FormData($("#uploadForm")[0]);
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (returndata) {
+                    alert(returndata);
+                },
+                error: function (returndata) {
+                    alert(returndata);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <form id="uploadForm">
+        <p>指定文件名： <input type="text" name="filename" value="" /></p>
+        <p>上传文件： <input type="file" name="file" /></p>
+        <input type="button" value="上传" onclick="doUpload()" />
+    </form>
+</body>
+
+</html>
