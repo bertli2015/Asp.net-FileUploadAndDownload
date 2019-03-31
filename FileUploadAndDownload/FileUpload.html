@@ -6,8 +6,11 @@
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script>
         function doUpload() {
-            var url = 'http://localhost:6346/api/Upload?guid=1234567890';
+            var url = 'http://localhost:6346/api/Upload';
+            url += '?' + $('#guid').val().toString();
             var formData = new FormData($("#uploadForm")[0]);
+            formData.append("param1", "value1");
+            formData.append("param2", "value2");
             $.ajax({
                 url: url,
                 type: 'POST',
@@ -28,7 +31,9 @@
 </head>
 <body>
     <form id="uploadForm">
-        <p>指定文件名： <input type="text" name="filename" value="" /></p>
+        <p>guid： <input type="text" name="guid" id="guid" value="" /></p>
+        <p>param1： <input type="text" name="param1" value="" /></p>
+        <p>param2： <input type="text" name="param2" value="" /></p>
         <p>上传文件： <input type="file" name="file" /></p>
         <input type="button" value="上传" onclick="doUpload()" />
     </form>
