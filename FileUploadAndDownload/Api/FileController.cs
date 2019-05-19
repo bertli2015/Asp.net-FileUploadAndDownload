@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Hosting;
 using System.Web.Http;
@@ -81,5 +82,35 @@ namespace FileUploadAndDownload.Api
             return Json(string.Join(",", files), _camelCaseSetting);
         }
         //方法二https://www.cnblogs.com/GarsonZhang/p/5511427.html
+
+        [HttpPost]
+        [Route("api/Download")]
+        public async Task<HttpResponseMessage> Get(string guid, string name)
+        {
+            try
+            {
+                if(string.IsNullOrEmpty(guid) && string.IsNullOrEmpty(name))
+                {
+                    return new HttpResponseMessage(HttpStatusCode.BadRequest);
+                }
+                return await Task.Run(() =>
+                {
+                    var directoryInfo = new DirectoryInfo(HostingEnvironment.MapPath("~/Upload"));
+                    var f = directoryInfo.GetFiles().Where(x => x.Name.Contains(guid) || x.Name.Contains(name)).FirstOrDefault();
+                    if (f == null) return new HttpResponseMessage(HttpStatusCode.NoContent);
+                    var result = new HttpResponseMessage(HttpStatusCode.OK);
+                    FileStream fs = new FileStream(f.FullName, FileMode.Open);
+                    result.Content = new StreamContent(fs);
+                    result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                    result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
+                    result.Content.Headers.ContentDisposition.FileName = f.Name;
+                    return result;
+                });
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseMessage(HttpStatusCode.NoContent);
+            }
+        }
     }
 }
